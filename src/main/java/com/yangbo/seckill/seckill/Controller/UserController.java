@@ -1,6 +1,7 @@
 package com.yangbo.seckill.seckill.Controller;
 
 import com.yangbo.seckill.seckill.domain.User;
+import com.yangbo.seckill.seckill.redis.RedisServer;
 import com.yangbo.seckill.seckill.result.Result;
 import com.yangbo.seckill.seckill.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,4 +23,24 @@ public class UserController {
         System.out.println(user.getName());
         return Result.success(user);
     }
+
+    //测试事务
+    @RequestMapping("/tx")
+    @ResponseBody
+    public Result<Boolean> dbTx(){
+        userService.tx();
+        return Result.success(true);
+    }
+
+    @Autowired
+    RedisServer redisServer;
+
+    @RequestMapping("/redis")
+    @ResponseBody
+    public Result<String> redisGet(){
+        String v1 = redisServer.get("key1",String.class);
+        return Result.success(v1);
+    }
+
+
 }

@@ -6,6 +6,7 @@ public class Result<T> {
     private T data;
 
     private Result(T data) {
+        this.data = data;
     }
     private Result(CodeMsg cmg){
         if(cmg==null){
