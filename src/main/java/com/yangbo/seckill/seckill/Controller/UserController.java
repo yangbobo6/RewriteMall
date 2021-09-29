@@ -1,7 +1,8 @@
 package com.yangbo.seckill.seckill.Controller;
 
 import com.yangbo.seckill.seckill.domain.User;
-import com.yangbo.seckill.seckill.redis.RedisServer;
+import com.yangbo.seckill.seckill.redis.RedisService;
+import com.yangbo.seckill.seckill.redis.UserKey;
 import com.yangbo.seckill.seckill.result.Result;
 import com.yangbo.seckill.seckill.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +34,31 @@ public class UserController {
     }
 
     @Autowired
-    RedisServer redisServer;
+    RedisService redisService;
 
     @RequestMapping("/redis")
     @ResponseBody
-    public Result<String> redisGet(){
-        String v1 = redisServer.get("key1",String.class);
-        return Result.success(v1);
+//    public Result<String> redisGet(){
+//        String v1 = redisService.get(UserKey.getById,"key1",String.class);
+//        return Result.success(v1);
+//    }
+    public Result<User> redisGet(){
+        User user = redisService.get(UserKey.getById,""+1,User.class);
+        return Result.success(user);
     }
+
+
+    @RequestMapping("/redis/set")
+    @ResponseBody
+    public Result<Boolean> redisSet() {
+        User user = new User();
+        user.setId(1);
+        user.setName("1111");
+        redisService.set(UserKey.getById,""+1,user); //UserKey:id1
+        return Result.success(true);
+    }
+
+
 
 
 }
