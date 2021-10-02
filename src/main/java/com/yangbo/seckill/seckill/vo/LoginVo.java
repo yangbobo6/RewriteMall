@@ -1,11 +1,19 @@
 package com.yangbo.seckill.seckill.vo;
 
 
+import com.yangbo.seckill.seckill.validator.IsMobile;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 //接受  前端产生的数据  登陆页面的mobie号码 和 密码
 public class LoginVo {
 
+    @NotNull
+    @IsMobile
     private String mobile;
-
+    @NotNull
+    @Length(min = 32)
     private String password;
 
     public String getMobile() {

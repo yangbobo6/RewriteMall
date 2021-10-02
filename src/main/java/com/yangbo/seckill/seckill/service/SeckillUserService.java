@@ -1,5 +1,6 @@
 package com.yangbo.seckill.seckill.service;
 
+import com.yangbo.seckill.seckill.Exception.GlobalException;
 import com.yangbo.seckill.seckill.dao.SeckillUserDao;
 import com.yangbo.seckill.seckill.domain.SeckillUser;
 import com.yangbo.seckill.seckill.domain.User;
@@ -17,9 +18,13 @@ public class SeckillUserService {
         return seckillUserDao.getById(id);
     }
 
-    public CodeMsg login(LoginVo loginVo){
+    //对业务层代码进行优化
+    // CodeMsg方法转化成 boolean方法   service只注重业务层代码
+    public Boolean login(LoginVo loginVo){
         if(loginVo==null){
-            return CodeMsg.SERVER_ERROR;
+            //return CodeMsg.SERVER_ERROR;
+            //定义全局异常后，可以将异常直接外抛
+            throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
         String mobile = loginVo.getMobile();
         String password = loginVo.getPassword();
@@ -27,7 +32,8 @@ public class SeckillUserService {
         // 并将密码进行比对
         SeckillUser user = getByIdSer(Long.parseLong(mobile));
         if(user == null){
-            return CodeMsg.MOBILE_NOT_EXISTS;
+            //return CodeMsg.MOBILE_NOT_EXISTS;
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXISTS);
         }
 
         //获取数据库中的salt加密值
@@ -35,9 +41,11 @@ public class SeckillUserService {
         String dbPass = user.getPassword();
         String calPass = MD5Util.formPassToDbPass(password,salt);
         if(!calPass.equals(dbPass)){
-            return CodeMsg.PASSWORD_ERROR;
+            //return CodeMsg.PASSWORD_ERROR;
+            throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
-        return CodeMsg.SUCCESS;
+        return true;
+        //return CodeMsg.SUCCESS;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.yangbo.seckill.seckill.result;
 
+//<T>泛型  表示输出的信息类型
 public class Result<T> {
     private int code;
     private String msg;
@@ -16,12 +17,12 @@ public class Result<T> {
         this.msg = cmg.getMsg();
     }
 
-    //成功的时候调用
+    //成功的时候调用   ???为什么成功的时候success码为 0  初始值code为0，msg为null
     public static <T> Result<T> success(T data){
         return new Result<T>(data);
     }
 
-    //失败的时候调用
+    //失败的时候调用   方法
     public static <T> Result<T> error(CodeMsg cmg){
         return new Result<T>(cmg);
     }
