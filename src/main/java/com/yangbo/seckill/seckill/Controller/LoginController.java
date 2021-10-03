@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Controller
@@ -34,7 +36,8 @@ public class LoginController {
 
     //登录信息的比较   ？？ 怎样取到前端的mobile和password
     @RequestMapping("/do_login")
-    public Result<Boolean> doLogin(@Valid LoginVo loginVo){
+    @ResponseBody
+    public Result<Boolean> doLogin(HttpServletResponse httpServletResponse, @Valid LoginVo loginVo){
         //进行了Validation参数校验，由vo层接管
 
 
@@ -58,7 +61,7 @@ public class LoginController {
 
 
         //登录  直接调用service层
-        seckillUserService.login(loginVo);
+        seckillUserService.login(httpServletResponse,loginVo);
         return Result.success(true);
 
 //        CodeMsg cm = seckillUserService.login(loginVo);
