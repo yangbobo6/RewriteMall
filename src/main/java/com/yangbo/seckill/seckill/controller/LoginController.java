@@ -1,19 +1,14 @@
-package com.yangbo.seckill.seckill.Controller;
+package com.yangbo.seckill.seckill.controller;
 
-import com.yangbo.seckill.seckill.result.CodeMsg;
 import com.yangbo.seckill.seckill.result.Result;
 import com.yangbo.seckill.seckill.service.SeckillUserService;
-import com.yangbo.seckill.seckill.service.UserService;
-import com.yangbo.seckill.seckill.util.ValidatorUtil;
 import com.yangbo.seckill.seckill.vo.LoginVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;

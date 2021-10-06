@@ -10,8 +10,13 @@ public class UUIDUtil {
         return UUID.randomUUID().toString().replace("-","");
     }
 
-//    public static void main(String[] args) {
-//        Object o = UUIDUtil.uuid();
-//        System.out.println(o);
-//    }
+    public static void main(String[] args) {
+        Object o = UUIDUtil.uuid();
+        String s = UUIDUtil.uuid();
+        String v = UUIDUtil.uuid();
+
+        System.out.println(o);
+        System.out.println(s);
+        System.out.println(v);
+    }
 }

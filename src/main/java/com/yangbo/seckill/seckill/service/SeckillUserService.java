@@ -1,10 +1,9 @@
 package com.yangbo.seckill.seckill.service;
 
-import com.yangbo.seckill.seckill.Controller.LoginController;
-import com.yangbo.seckill.seckill.Exception.GlobalException;
+import com.yangbo.seckill.seckill.controller.LoginController;
+import com.yangbo.seckill.seckill.exception.GlobalException;
 import com.yangbo.seckill.seckill.dao.SeckillUserDao;
 import com.yangbo.seckill.seckill.domain.SeckillUser;
-import com.yangbo.seckill.seckill.domain.User;
 import com.yangbo.seckill.seckill.redis.RedisService;
 import com.yangbo.seckill.seckill.redis.SeckillUserKey;
 import com.yangbo.seckill.seckill.result.CodeMsg;
@@ -14,7 +13,6 @@ import com.yangbo.seckill.seckill.vo.LoginVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
@@ -61,47 +59,49 @@ public class SeckillUserService {
         String salt = user.getSalt();
         String dbPass = user.getPassword();
         String calPass = MD5Util.formPassToDbPass(password,salt);
+        //判断密码是否相等
         if(!calPass.equals(dbPass)){
             //return CodeMsg.PASSWORD_ERROR;
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
 
 
-        //登录成功后，服务器端  生成cookie  String类型
-        String token = UUIDUtil.uuid();
-        //标识 哪一个用户对应的 信息,将用户和cookie信息绑定，redis缓存里面有用户信息
-        //将个人信息放到第三方放（redis）的缓存里面   ----前缀/序列号/数据库名字----
-        redisService.set(SeckillUserKey.token,token,user);
-        //生成cookie
-        Cookie cookie = new Cookie(COOKIE_NAME_TOKEN,token);
-        //设置有效期为秒杀的有效期
-        cookie.setMaxAge(SeckillUserKey.token.expireSeconds());
-        cookie.setPath("/");
-        log.info("name: "+cookie.getName());
-        log.info("value: "+cookie.getValue());
-        //记录cookie
-        httpServletResponse.addCookie(cookie);
+//        //登录成功后，服务器端  生成cookie  String类型
+//        String token = UUIDUtil.uuid();
+//        //标识 哪一个用户对应的 信息,将用户和cookie信息绑定，redis缓存里面有用户信息
+//        //将个人信息放到第三方放（redis）的缓存里面   ----前缀/序列号/数据库名字----
+//        redisService.set(SeckillUserKey.token,token,user);
+//        //生成cookie
+//        Cookie cookie = new Cookie(COOKIE_NAME_TOKEN,token);
+//        //设置有效期为秒杀的有效期
+//        cookie.setMaxAge(SeckillUserKey.token.expireSeconds());
+//        cookie.setPath("/");
+//        log.info("name: "+cookie.getName());
+//        log.info("value: "+cookie.getValue());
+//        //记录cookie
+//        httpServletResponse.addCookie(cookie);
+        String token =UUIDUtil.uuid();
+        addCookie(httpServletResponse,token,user);
         return true;
         //return CodeMsg.SUCCESS;
     }
 
-    //通过redis缓存获取 value秒杀用户对象
+    //如果缓存里面有，通过redis缓存获取 value秒杀用户对象，比较
     public SeckillUser getByToken(HttpServletResponse response,String token) {
         if(StringUtils.isEmpty(token)){
             return null;
         }
-        //增加过期时间
+        //增加过期时间  通过token值，从缓存里面获取用户
         SeckillUser seckillUser =  redisService.get(SeckillUserKey.token,token,SeckillUser.class);
         //生成cookie,延长有效期
         if(seckillUser!=null){
-            addCookie(response,seckillUser);
+            addCookie(response,token,seckillUser);
         }
         return seckillUser;
     }
 
-    private void addCookie(HttpServletResponse response,SeckillUser user){
+    private void addCookie(HttpServletResponse response,String token,SeckillUser user){
         //登录成功后，服务器端  生成cookie  String类型
-        String token = UUIDUtil.uuid();
         //标识 哪一个用户对应的 信息,将用户和cookie信息绑定，redis缓存里面有用户信息
         //将个人信息放到第三方放（redis）的缓存里面   ----前缀/序列号/数据库名字----
         redisService.set(SeckillUserKey.token,token,user);
@@ -110,10 +110,8 @@ public class SeckillUserService {
         //设置有效期为秒杀的有效期
         cookie.setMaxAge(SeckillUserKey.token.expireSeconds());
         cookie.setPath("/");
-        log.info("name: "+cookie.getName());
-        log.info("value: "+cookie.getValue());
+
         //记录cookie
         response.addCookie(cookie);
-
     }
 }

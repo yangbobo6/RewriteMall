@@ -1,4 +1,4 @@
-package com.yangbo.seckill.seckill.Controller;
+package com.yangbo.seckill.seckill.controller;
 
 import com.yangbo.seckill.seckill.domain.User;
 import com.yangbo.seckill.seckill.redis.RedisService;

@@ -1,4 +1,4 @@
-package com.yangbo.seckill.seckill.Exception;
+package com.yangbo.seckill.seckill.exception;
 
 import com.yangbo.seckill.seckill.result.CodeMsg;
 
