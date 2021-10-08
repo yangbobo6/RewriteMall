@@ -37,11 +37,11 @@ public class GoodsController {
     }
 
     @RequestMapping("/to_detail/{goodsId}")
-    @ResponseBody               //请求路径中占位符的值
+//    @ResponseBody               //请求路径中占位符的值
     public String detail(Model model, SeckillUser seckillUser,
-                         @PathVariable("goodId") long goodsId){
+                         @PathVariable("goodsId") long goodsId){
         model.addAttribute("user",seckillUser);
-        GoodsVo goods = goodsService.getGoodsVoByGoodsId();
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
         model.addAttribute("goods",goods);
 
         long startAt = goods.getStartDate().getTime();
@@ -49,16 +49,21 @@ public class GoodsController {
         long now = System.currentTimeMillis();
 
         int miaoshaStatus = 0;
+        int remainTime = 0;
         if(now<startAt){ //秒杀未开始
             miaoshaStatus = 0;
-        }else if(now>startAt){  //秒杀已经结束
+            remainTime =(int)((startAt-now)/1000);
+        }else if(now>endAt){  //秒杀已经结束
             miaoshaStatus = 2;
+            remainTime = -1;
         }else {   //秒杀正在进行中
             miaoshaStatus = 1;
+            remainTime = 0;
         }
+        model.addAttribute("miaoshaStatus",miaoshaStatus);
+        model.addAttribute("remainSeconds",remainTime);
 
-
-        return "goods_list";
+        return "goods_detail";
     }
 
 

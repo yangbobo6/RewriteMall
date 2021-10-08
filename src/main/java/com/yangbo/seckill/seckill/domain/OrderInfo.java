@@ -2,6 +2,7 @@ package com.yangbo.seckill.seckill.domain;
 
 import java.util.Date;
 
+//订单表
 public class OrderInfo {
     private Long id;
     private Long userId;

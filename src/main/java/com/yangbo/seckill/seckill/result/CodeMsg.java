@@ -22,6 +22,11 @@ public class CodeMsg {
     public static CodeMsg MOBILE_NOT_EXISTS = new CodeMsg(500213,"手机号不存在");
     public static CodeMsg PASSWORD_ERROR = new CodeMsg(500214,"密码错误");
 
+    //秒杀模块
+    public static CodeMsg SECKILL_OVER = new CodeMsg(500500,"商品已秒杀完");
+    public static CodeMsg REPEAT_SECKILL = new CodeMsg(500501,"不能重复秒杀");
+
+
     //
     public CodeMsg fillArgs(Object... args){
         int code = this.code;
