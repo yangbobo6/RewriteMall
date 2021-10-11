@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequestMapping("/miaosha")
 public class SeckillController {
     @Autowired
     GoodsService goodsService;
@@ -38,13 +39,13 @@ public class SeckillController {
         int stock = goods.getStockCount();
         if(stock <= 0){
             model.addAttribute("errmsg", CodeMsg.SECKILL_OVER.getMsg());
-            return "miaosha_failed";
+            return "miaosha_fail";
         }
         //判断是否已经秒杀成功  (who,what)  去秒杀订单里面查询是否有
         SeckillOrder order = orderService.getSeckillOrderByUserIdGoodsId(seckillUser.getId(),goodsId);
         if(order != null){
             model.addAttribute("errmsg", CodeMsg.REPEAT_SECKILL.getMsg());
-            return "miaosha_failed";
+            return "miaosha_fail";
         }
 
         //秒杀过程   下订单  减库存  写入秒杀订单

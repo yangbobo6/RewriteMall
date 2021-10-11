@@ -25,6 +25,5 @@ public class SeckillService {
         goodsService.reduceStock(goods);
         //生成订单
         return orderService.createOrder(seckillUser,goods);
-
     }
 }
