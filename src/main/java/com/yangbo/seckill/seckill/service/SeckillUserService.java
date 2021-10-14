@@ -30,9 +30,38 @@ public class SeckillUserService {
     //定义cookie
     public static final String COOKIE_NAME_TOKEN = "token";
 
-
+    //设置对象缓存  通过手机号查找用户
     public SeckillUser getByIdSer(long id){
-        return seckillUserDao.getById(id);
+        //取出缓存
+        SeckillUser user = redisService.get(SeckillUserKey.getById,""+id,SeckillUser.class);
+        if(user!=null){
+            return user;
+        }
+        //取数据库
+        user = seckillUserDao.getById(id);
+        if(user!=null){
+            redisService.set(SeckillUserKey.getById,""+id,user);
+        }
+        return user;
+    }
+
+    //更新数据库密码操作
+    public Boolean updatePass(String token,long id,String passwordNew){
+        //取user
+        SeckillUser user = getByIdSer(id);
+        if(user == null){
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXISTS);
+        }
+        //更改数据库
+        SeckillUser toBeUpdate = new SeckillUser();
+        toBeUpdate.setId(id);
+        toBeUpdate.setPassword(MD5Util.formPassToDbPass(passwordNew,user.getSalt()));
+        seckillUserDao.update(toBeUpdate);
+        //修改缓存
+        redisService.delete(SeckillUserKey.getById,""+id);
+        user.setPassword(toBeUpdate.getPassword());
+        redisService.set(SeckillUserKey.token,token,user);
+        return true;
     }
 
     //对业务层代码进行优化

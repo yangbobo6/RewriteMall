@@ -32,7 +32,7 @@ public class RedisService {
         }
     }
 
-
+    //自定义的redis中的set方法，
     public <T> Boolean set(KeyPrefix prefix, String key, T value) {
         Jedis jedis =null;
         try {

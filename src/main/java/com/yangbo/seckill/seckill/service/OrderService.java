@@ -43,4 +43,8 @@ public class OrderService {
         orderDao.insertSeckillOrder(seckillOrder);
         return orderInfo;
     }
+
+    public OrderInfo getOrderById(long orderId) {
+        return orderDao.getOrderById(orderId);
+    }
 }

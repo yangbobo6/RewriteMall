@@ -72,6 +72,7 @@
 </body>
 </html>
 <script>
+    //渲染页面方法
 function render(detail){
 	var goods = detail.goods;
 	var order = detail.order;
@@ -94,6 +95,7 @@ $(function(){
 })
 
 function getOrderDetail(){
+    //获取前端页面的商品id
 	var orderId = g_getQueryString("orderId");
 	$.ajax({
 		url:"/order/detail",
@@ -113,7 +115,5 @@ function getOrderDetail(){
 		}
 	});
 }
-
-
 
 </script>
