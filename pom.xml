@@ -97,6 +97,11 @@
 <!--            <artifactId>spring-boot-starter-tomcat</artifactId>-->
 <!--            <scope>provided</scope>-->
 <!--        </dependency>-->
+        <!--rabbitmq依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
 
 
     </dependencies>

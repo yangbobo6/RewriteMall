@@ -1,7 +1,9 @@
 package com.yangbo.seckill.seckill.controller;
 
+import com.yangbo.seckill.seckill.rabbitmq.MQSender;
 import com.yangbo.seckill.seckill.result.CodeMsg;
 import com.yangbo.seckill.seckill.result.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/demo")
 public class demoController {
+
+    @Autowired
+    MQSender mqSender;
 
     @RequestMapping("/thymeleaf")
     public String hello(Model model){
@@ -32,4 +37,17 @@ public class demoController {
         //return new Result<>(50010,"xxx");
         //return new Result<>(50020,"session失效");
     }
+    @RequestMapping("/mq")
+    @ResponseBody
+    public Result<String> rabbitmq(){
+        mqSender.send("123");
+        return Result.success("hello");
+    }
+    @RequestMapping("/mq/topic")
+    @ResponseBody
+    public Result<String> rabbitmq2(){
+        mqSender.sendTopic("topicAndYangbobo");
+        return Result.success("topic Success");
+    }
+
 }
