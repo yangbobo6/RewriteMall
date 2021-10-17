@@ -37,17 +37,31 @@ public class demoController {
         //return new Result<>(50010,"xxx");
         //return new Result<>(50020,"session失效");
     }
-    @RequestMapping("/mq")
-    @ResponseBody
-    public Result<String> rabbitmq(){
-        mqSender.send("123");
-        return Result.success("hello");
-    }
-    @RequestMapping("/mq/topic")
-    @ResponseBody
-    public Result<String> rabbitmq2(){
-        mqSender.sendTopic("topicAndYangbobo");
-        return Result.success("topic Success");
-    }
+//    @RequestMapping("/mq")
+//    @ResponseBody
+//    public Result<String> rabbitmq(){
+//        mqSender.send("123");
+//        return Result.success("hello");
+//    }
+//    @RequestMapping("/mq/topic")
+//    @ResponseBody
+//    public Result<String> rabbitmq2(){
+//        mqSender.sendTopic("topicAndYangbobo");
+//        return Result.success("topic Success");
+//    }
+//
+//    @RequestMapping("/mq/fanout")
+//    @ResponseBody
+//    public Result<String> rabbitmq3(){
+//        mqSender.sendFanout("fanout");
+//        return Result.success("fanout Success");
+//    }
+
+//    @RequestMapping("/mq/header")
+//    @ResponseBody
+//    public Result<String> rabbitmq4(){
+//        mqSender.sendHeader("header Message");
+//        return Result.success("header Success");
+//    }
 
 }

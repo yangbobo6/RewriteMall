@@ -126,6 +126,7 @@ function getMiaoshaResult(goodsId){
 		},
 		success:function(data){
 			if(data.code == 0){
+			    //后端返回result的值
 				var result = data.data;
 				if(result < 0){
 					layer.msg("对不起，秒杀失败");
@@ -162,12 +163,14 @@ function doMiaosha(path){
 		success:function(data){
 			if(data.code == 0){
 				//window.location.href="/order_detail.htm?orderId="+data.data.id;
+                //客户端开始轮询
 				getMiaoshaResult($("#goodsId").val());
 			}else{
 				layer.msg(data.msg);
 			}
 		},
 		error:function(){
+		    layer.msg("123");
 			layer.msg("客户端请求有误");
 		}
 	});

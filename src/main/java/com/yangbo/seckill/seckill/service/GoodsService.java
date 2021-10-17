@@ -25,10 +25,11 @@ public class GoodsService {
     }
 
     //减少商品表里面的商品数量  （减少某一张表中的数量  直接update）
-    public void reduceStock(GoodsVo goods) {
+    public Boolean reduceStock(GoodsVo goods) {
         SeckillGoods g = new SeckillGoods();
         g.setGoodsId(goods.getId());
-        //减少商品的数量
-        goodsDao.reduceStock(g);
+        //减少商品的数量    ?????返回是int？？？？
+        int ret = goodsDao.reduceStock(g);
+        return ret>0;
     }
 }
