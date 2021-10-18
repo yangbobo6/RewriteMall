@@ -1,6 +1,5 @@
 package com.yangbo.seckill.seckill.controller;
 
-
 import com.yangbo.seckill.seckill.domain.OrderInfo;
 import com.yangbo.seckill.seckill.domain.SeckillOrder;
 import com.yangbo.seckill.seckill.domain.SeckillUser;
@@ -8,21 +7,28 @@ import com.yangbo.seckill.seckill.rabbitmq.MQSender;
 import com.yangbo.seckill.seckill.rabbitmq.SeckillMessage;
 import com.yangbo.seckill.seckill.redis.GoodsKey;
 import com.yangbo.seckill.seckill.redis.RedisService;
+import com.yangbo.seckill.seckill.redis.SeckillKey;
 import com.yangbo.seckill.seckill.result.CodeMsg;
 import com.yangbo.seckill.seckill.result.Result;
 import com.yangbo.seckill.seckill.service.GoodsService;
 import com.yangbo.seckill.seckill.service.OrderService;
 import com.yangbo.seckill.seckill.service.SeckillService;
+import com.yangbo.seckill.seckill.util.MD5Util;
+import com.yangbo.seckill.seckill.util.UUIDUtil;
 import com.yangbo.seckill.seckill.vo.GoodsVo;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +72,7 @@ public class SeckillController implements InitializingBean {
 
 
 
-    @RequestMapping("/do_miaosha")
+    @RequestMapping("/do_miaosha1")
     public String list(Model model, SeckillUser seckillUser,
                        @RequestParam("goodsId")long goodsId){
         model.addAttribute("user",seckillUser);
@@ -95,14 +101,22 @@ public class SeckillController implements InitializingBean {
     }
 
     //ajax静态页面缓存    前后端分离
-    @RequestMapping(value = "/do_miaosha1",method = RequestMethod.POST)
+    @RequestMapping(value = "/{path}/do_miaosha",method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> list1(Model model, SeckillUser seckillUser,
-                        @RequestParam("goodsId")long goodsId){
+                                 @RequestParam("goodsId")long goodsId,
+                                 @PathVariable("path")String path){
         model.addAttribute("user",seckillUser);
         if(seckillUser==null){
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+        //验证path
+        boolean check = seckillService.checkPath(seckillUser,goodsId,path);
+        if(!check){
+            Result.error(CodeMsg.REQUEST_ILLEGAL);
+        }
+
+
         //6.2 用法  内存标记，减少redis的访问
         Boolean over = localOverMap.get(goodsId);
         if(over){
@@ -147,8 +161,8 @@ public class SeckillController implements InitializingBean {
 
         return Result.success(orderInfo);
          **/
-
     }
+
     //成功的时候轮询  秒杀成功，返回订单id，失败则返回-1  0 派对中  成功后转入支付页面
     @RequestMapping(value = "/result",method = RequestMethod.GET)
     @ResponseBody
@@ -164,19 +178,46 @@ public class SeckillController implements InitializingBean {
     }
 
     //请求接口获取秒杀地址
-    @RequestMapping(value = "/result",method = RequestMethod.GET)
+    @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
-    public Result<String> seckillResul(Model model, SeckillUser seckillUser,
-                                      @RequestParam("goodsId")long goodsId) {
+    public Result<String> getSeckillPath(Model model, SeckillUser seckillUser,
+                                      @RequestParam("goodsId")long goodsId,
+                                      @RequestParam("verifyCode")int verifyCode) {
         model.addAttribute("user", seckillUser);
         if (seckillUser == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+        //检查验证码输出结果是否和 服务端 一致
+        boolean check = seckillService.checkVerifyCode(seckillUser,goodsId,verifyCode);
+        if(!check){
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
+        }
 
-
-        return Result.success("");
+        String path = seckillService.createSeckillPath(seckillUser,goodsId);
+        return Result.success(path);
     }
 
+    //生成图片验证码参数
+    @RequestMapping(value = "/verifyCode",method = RequestMethod.GET)
+    @ResponseBody
+    public Result<String> verifyCode(HttpServletResponse response, SeckillUser seckillUser,
+                                      @RequestParam("goodsId")long goodsId) {
+        if (seckillUser == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
 
+        BufferedImage image = seckillService.createVerifyCode(seckillUser,goodsId);
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            ImageIO.write(image,"JPEG",outputStream);
+            outputStream.flush();
+            outputStream.close();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Result.error(CodeMsg.Seckill_FAILED);
+        }
+        return null;
+    }
 
 }
