@@ -14,6 +14,8 @@ public class CodeMsg {
     public static CodeMsg SERVER_ERROR = new CodeMsg(50100,"服务端异常");
     public static CodeMsg BIND_ERROR = new CodeMsg(500101, "参数校验异常： %s");
     public static CodeMsg REQUEST_ILLEGAL = new CodeMsg(500502,"请求非法");
+    public static CodeMsg ACCESS_COUNT_REACH = new CodeMsg(500503,"请求到达上限");
+
     //订单异常
     public static CodeMsg ORDER_NOT_EXIST = new CodeMsg(500300,"订单不能为空");
     //登录异常

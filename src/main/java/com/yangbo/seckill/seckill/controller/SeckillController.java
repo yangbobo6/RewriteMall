@@ -1,10 +1,12 @@
 package com.yangbo.seckill.seckill.controller;
 
+import com.yangbo.seckill.seckill.access.AccessLimit;
 import com.yangbo.seckill.seckill.domain.OrderInfo;
 import com.yangbo.seckill.seckill.domain.SeckillOrder;
 import com.yangbo.seckill.seckill.domain.SeckillUser;
 import com.yangbo.seckill.seckill.rabbitmq.MQSender;
 import com.yangbo.seckill.seckill.rabbitmq.SeckillMessage;
+import com.yangbo.seckill.seckill.redis.AccessKey;
 import com.yangbo.seckill.seckill.redis.GoodsKey;
 import com.yangbo.seckill.seckill.redis.RedisService;
 import com.yangbo.seckill.seckill.redis.SeckillKey;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -178,15 +181,29 @@ public class SeckillController implements InitializingBean {
     }
 
     //请求接口获取秒杀地址
+    @AccessLimit(seconds=5,maxCount=5,needLogin=true)  //定义一个这样的注解
     @RequestMapping(value = "/path",method = RequestMethod.GET)
     @ResponseBody
-    public Result<String> getSeckillPath(Model model, SeckillUser seckillUser,
-                                      @RequestParam("goodsId")long goodsId,
-                                      @RequestParam("verifyCode")int verifyCode) {
-        model.addAttribute("user", seckillUser);
+    public Result<String> getSeckillPath(HttpServletRequest request,SeckillUser seckillUser,
+                                         @RequestParam("goodsId")long goodsId,
+                                         @RequestParam("verifyCode")int verifyCode) {
         if (seckillUser == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+
+        //查询访问的次数  利用redis缓存实现
+        String url = request.getRequestURI();
+        String key = url + "_" + seckillUser.getId();
+        Integer count = redisService.get(AccessKey.access, key, Integer.class);
+        if(count==null){
+            redisService.set(AccessKey.access,key,1);
+        }else if(count<5){
+            redisService.incr(AccessKey.access,key);
+        }else {
+            return Result.error(CodeMsg.ACCESS_COUNT_REACH);
+        }
+
+
         //检查验证码输出结果是否和 服务端 一致
         boolean check = seckillService.checkVerifyCode(seckillUser,goodsId,verifyCode);
         if(!check){
