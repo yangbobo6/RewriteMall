@@ -128,7 +128,12 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-
+        <!--AOP的实现包-->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.8.9</version>
+        </dependency>
 
 
     </dependencies>

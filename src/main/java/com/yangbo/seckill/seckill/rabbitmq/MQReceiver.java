@@ -66,18 +66,18 @@ public class MQReceiver {
 //        log.info("direct模式 receive message："+message);
 //    }
 //
-//    /**
-//     * topic模式  消息接收者
-//     */
-//    @RabbitListener(queues = MQConfig.TOPIC_QUEUE1)
-//    public void topicReceiver1(String message){
-//        log.info("topic模式1 receive message："+message);
-//    }
-//
-//    @RabbitListener(queues = MQConfig.TOPIC_QUEUE2)
-//    public void topicReceiver2(String message){
-//        log.info("topic模式2 receive message："+message);
-//    }
+    /**
+     * topic模式  消息接收者
+     */
+    @RabbitListener(queues = MQConfig.TOPIC_QUEUE1)
+    public void topicReceiver1(String message){
+        log.info("topic模式1 receive message："+message);
+    }
+
+    @RabbitListener(queues = MQConfig.TOPIC_QUEUE2)
+    public void topicReceiver2(String message){
+        log.info("topic模式2 receive message："+message);
+    }
 //
 //    @RabbitListener(queues = MQConfig.HEADER_QUEUE)
 //    public void headerReceiver(byte[] message){

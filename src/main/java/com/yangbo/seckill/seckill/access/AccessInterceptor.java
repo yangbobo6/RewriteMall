@@ -35,6 +35,7 @@ public class AccessInterceptor implements HandlerInterceptor {
         if(handler instanceof HandlerMethod){
             //获取用户，保存起来
             SeckillUser users = getUsers(request, response);
+            //存到本地线程  threadLocal
             UserContext.setUser(users);
 
             HandlerMethod hm = (HandlerMethod) handler;
