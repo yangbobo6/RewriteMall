@@ -54,6 +54,8 @@ public class SeckillController implements InitializingBean {
 
     @Autowired
     MQSender sender;
+    
+    
     private Map<Long,Boolean> localOverMap = new HashMap<Long,Boolean>();
 
 
@@ -75,6 +77,7 @@ public class SeckillController implements InitializingBean {
 
 
 
+    //没有加入redis 
     @RequestMapping("/do_miaosha1")
     public String list(Model model, SeckillUser seckillUser,
                        @RequestParam("goodsId")long goodsId){
@@ -103,7 +106,7 @@ public class SeckillController implements InitializingBean {
         return "order_detail";
     }
 
-    //ajax静态页面缓存    前后端分离
+    //ajax静态页面缓存    前后端分离  秒杀的核心功能
     @RequestMapping(value = "/{path}/do_miaosha",method = RequestMethod.POST)
     @ResponseBody
     public Result<Integer> list1(Model model, SeckillUser seckillUser,
